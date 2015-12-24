@@ -1,0 +1,43 @@
+#!/bin/bash
+logdir="$HOME/.neurobin/webgit"
+mkdir -p "$logdir" || exit 1
+opts=( "$@" )
+#if no argument is passed this for loop will be skipped
+skip=0
+for ((i=0;i<$#;i++)) do
+if (( $skip > 0 ));then ((skip--));continue;fi
+case "${opts[$i]}" in
+   -h)
+   #dummy help option
+   echo "
+   webgitremote [-ars] reponame
+   -a  : add remote url
+   -r  : refresh remote url
+   -s  : set remote url"
+   
+	;;
+   -a)
+   gitfile="$logdir/${opts[$((i+1))]}.git"
+   [[ -f $gitfile ]] || { echo "No such file: $gitfile";exit 1; }
+   url="$(grep -sioP '(?<=^remote=).*' "$gitfile")"
+   [[ $url == "" ]] && { echo "url can not be empty";exit 1; }
+   git remote add origin "$url"
+   skip=1
+   ;;
+   -s)
+   gitfile="$logdir/${opts[$((i+1))]}.git"
+   [[ -f $gitfile ]] || { echo "No such file: $gitfile";exit 1; }
+   url="$(grep -sioP '(?<=^remote=).*' "$gitfile")"
+   [[ $url == "" ]] && { echo "url can not be empty";exit 1; }
+   git remote set-url origin "$url"
+   skip=1
+   ;;
+   
+   *)
+   #other unknown options
+   echo invalid option
+ 	break
+	
+	;;
+esac
+done

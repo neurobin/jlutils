@@ -1,0 +1,13 @@
+#!/bin/sh
+user="$2"
+reponame="$1"
+if [ "$user" = "" ]; then
+user=$(git config github.user)
+fi
+if [ "$user" = "" ]; then
+read -p "Enter Github username: " user
+fi
+if [ "$reponame" = "" ]; then
+read -p "Enter Github Repository Name: " reponame
+fi
+curl -u "$user" https://api.github.com/user/repos -d "{\"name\":\"$reponame\"}"

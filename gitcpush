@@ -1,0 +1,14 @@
+#!/bin/bash
+br="$1"
+msg="$2"
+[[ $2 == "" ]] && msg="$br"
+[[ $br == "" ]] && { echo "Branch name must be given. Abort.";exit 1;  }
+[[ $(git rev-parse --abbrev-ref HEAD) != master ]] && { echo "You are not in master. Abort.";exit 1;  }
+git add --all :/ &&
+git commit -m "$msg"
+{ git checkout release || git checkout -b release; } &&
+git merge master
+{ git checkout "$br" || git checkout -b "$br"; } &&
+git merge master
+git checkout master &&
+git push --all

@@ -1,0 +1,5 @@
+#!/bin/bash
+find . -type d -exec chmod 755 {} \; &&
+find . -type f -exec chmod 644 {} \; &&
+echo success || echo failed
+#find . -type f -name '*.php' -exec chmod 600 {} \;
