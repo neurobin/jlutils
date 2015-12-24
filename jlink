@@ -1,8 +1,16 @@
 #!/bin/bash
+[[ $1 == '-t' ]] && shift &&
 dir="$1"
-[[ -d $dir ]] || echo "No such directory: $dir"
+shift
+files=( "$@" )
+getAbsolutePath(){
+    [[ -d $1 ]] && { cd "$1"; echo "$(pwd -P)"; } || 
+    { cd "$(dirname "$1")"; echo "$(pwd -P)/$(basename "$1")"; }
+}
+[[ ! -d $dir && $dir != "" ]] && echo "No such directory: $dir"
 
-for file in ./*;do
-[[ $dir == "" ]] && ln -s "$file" "$file.link" ||
-ln -s -t "$dir" "$file" "$file.link"
+for file in "${files[@]}";do
+file="$(getAbsolutePath "$file")"
+[[ $dir == "" ]] && ln -sf "$file" "$file.link" ||
+ln -sf -t "$dir" "$file"
 done
