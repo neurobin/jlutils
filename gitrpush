@@ -16,6 +16,7 @@ Options:
     -p : pull first
     -m : comment
     -wd: work dir
+    -d : domain
     -v : show version info
     -h : show help
 "
@@ -23,6 +24,7 @@ Options:
 pull=false
 comment="update"
 wd='.'
+force=false
 for op in "$@";do
     case "$op" in
         -v|--version)
@@ -39,6 +41,10 @@ for op in "$@";do
             pull=true
             shift
             ;;
+        -f|--force)
+            force=true
+            shift
+            ;;
         -m|--comment)
             shift
             comment="$1"
@@ -49,15 +55,16 @@ for op in "$@";do
             wd="$1"
             shift
             ;;
+         -d|--domain)
+            shift
+            dom="$1"
+            shift
+            ;;
         
         -*)
             echo "E: Invalid option: $1"
             shift
             exit 1
-            ;;
-         *)
-            dom="$1"
-            shift
             ;;
     esac
 done
@@ -79,7 +86,7 @@ if { git add --all :/ || git add --all; } &&
                 git commit -m "$comment"; then
     echo 'Local commit successful'
 else
-    echo 'E: Local commit failed'; exit 1;
+    echo 'E: Local commit failed'
 fi
 
 #login to remote and detach the branch
@@ -96,7 +103,11 @@ else
 fi
 
 # push to remote
-if git push --all;
+p_flags=''
+if $force; then
+    p_flags="$p_flags -f"
+fi
+if git push $p_flags --all; then
     echo "Push to remote successful
 Re-attaching remote branch..."
 else

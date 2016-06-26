@@ -57,14 +57,14 @@ if ! git branch |grep '^*'|grep '\bmaster$' > /dev/null 2>&1; then
     exit 1
 fi
 
-{ git add --all :/ 2>/dev/null || git add --all; } &&
-git commit -m "$comment" &&
-{ git checkout release 2>/dev/null || git checkout -b release; } &&
-git merge master &&
-{ if [[ $branch != "" ]];then git checkout "$branch" 2>/dev/null || git checkout -b "$branch";fi; } &&
-git merge master &&
+{ git add --all :/ || git add --all; } &&
+git commit -m "$comment"
+{ git checkout release || git checkout -b release; } &&
+git merge master
+{ if [[ $branch != "" ]];then git checkout "$branch" || git checkout -b "$branch";fi; } &&
+git merge master
+git checkout master
 git push --all &&
-git checkout master &&
 echo Success
 
 
