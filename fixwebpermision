@@ -1,5 +1,13 @@
 #!/bin/bash
-find . -type d -exec chmod 755 {} \; &&
-find . -type f -exec chmod 644 {} \; &&
+#################################################################
+#Sets permissions for a website
+#folder permission is set to 755
+#file permission is set to 644
+#php file permission is set to 600
+#It works on the current directory where it is run
+#################################################################
+find . -type d -exec touch -r {} .timestamp.nb \; -exec chmod 755 {} \; -exec touch -r .timestamp.nb {} \; &&
+find . -type f -exec touch -r {} .timestamp.nb \; -exec chmod 644 {} \; -exec touch -r .timestamp.nb {} \; &&
+find . -type f -name '*.php' -exec touch -r {} .timestamp.nb \; -exec chmod 640 {} \;  -exec touch -r .timestamp.nb {} \; &&
 echo success || echo failed
-#find . -type f -name '*.php' -exec chmod 600 {} \;
+

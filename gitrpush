@@ -1,0 +1,123 @@
+#!/bin/sh
+p_name=gitrpush
+p_version=0.0.1
+ver_info="
+Name        : $p_name
+Version     : $p_version
+"
+help="
+########## $p_name #############
+git remote push
+pushes to remote host through ssh
+
+Depends on: jssh (https://github.com/neurobin/jssh)
+
+Options:
+    -p : pull first
+    -m : comment
+    -wd: work dir
+    -v : show version info
+    -h : show help
+"
+
+pull=false
+comment="update"
+wd='.'
+for op in "$@";do
+    case "$op" in
+        -v|--version)
+            echo "$ver_info"
+            shift
+            exit 0
+            ;;
+        -h|--help)
+            echo "$help"
+            shift
+            exit 0
+            ;;
+        -p|--pull)
+            pull=true
+            shift
+            ;;
+        -m|--comment)
+            shift
+            comment="$1"
+            shift
+            ;;
+        -wd|--work-dir)
+            shift
+            wd="$1"
+            shift
+            ;;
+        
+        -*)
+            echo "E: Invalid option: $1"
+            shift
+            exit 1
+            ;;
+         *)
+            dom="$1"
+            shift
+            ;;
+    esac
+done
+
+if [ -z "$dom" ]; then
+    echo "Domain (used with jssh) name must be given"
+    exit 1
+fi
+
+if $pull; then
+    if git pull origin master; then
+        echo 'Pulled from remote successfully'
+    else
+        echo 'Failed to pull from remote'
+    fi
+fi
+
+if { git add --all :/ || git add --all; } &&
+                git commit -m "$comment"; then
+    echo 'Local commit successful'
+else
+    echo 'E: Local commit failed'; exit 1;
+fi
+
+#login to remote and detach the branch
+
+if jssh "$dom" "cd $wd
+    { git add --all :/ || git add --all; } &&
+    git commit -m "$comment"
+    git checkout --detach || git checkout old-master || git checkout -b old-master
+    git merge master
+    "; then
+    echo 'Detached remote branch successfully'
+else
+    echo 'E: Failed to detach remote branch'; exit 1;
+fi
+
+# push to remote
+if git push --all;
+    echo "Push to remote successful
+Re-attaching remote branch..."
+else
+    echo 'E: Failed to push to remote'; exit 1;
+fi
+
+# reattach remote branch
+if jssh "$dom" "cd '$wd'
+    { git add --all :/ || git add --all; } &&
+    git commit -m '$comment'
+    git checkout master &&
+    echo 'Re-attached remote branch successfully'
+    ## manage permission
+    find . -type f -name '*.php' -exec sh -c 'touch -r \"\$0\" .timestamp.nb; chmod 600 \"\$0\"; touch -r .timestamp.nb \"\$0\"; rm .timestamp.nb' {} \; &&
+    echo 'Fixed php file permission'
+    find . -type d -exec sh -c 'touch -r \"\$0\" .timestamp.nb; chmod 755 \"\$0\"; touch -r .timestamp.nb \"\$0\"; rm .timestamp.nb' {} \; &&
+    echo 'Fixed directory permission'
+    "; then
+    echo 'Successfully re-attached remote branch'
+else
+    echo "E: Failed to re-attach remote branch"; exit 1;
+fi
+
+
