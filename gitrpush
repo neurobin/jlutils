@@ -14,6 +14,7 @@ Depends on: jssh (https://github.com/neurobin/jssh)
 
 Options:
     -p : pull first
+    -f : force push
     -m : comment
     -wd: work dir
     -d : domain
@@ -23,7 +24,11 @@ Options:
 
 pull=false
 comment="update"
-wd='.'
+
+s="$(git remote show origin |grep -i 'push[[:blank:]]\+url')"
+dom="$(echo "$s" |sed -n 's/.*@\([^:]\+\):.*/\1/p')"
+wd="$(echo "$s" |sed -n "s/.*$dom:[0-9]\+\([^[:blank:]]*\)[[:blank:]]*$/\1/p")"
+
 force=false
 for op in "$@";do
     case "$op" in
@@ -69,10 +74,17 @@ for op in "$@";do
     esac
 done
 
+
+
 if [ -z "$dom" ]; then
     echo "Domain (used with jssh) name must be given"
     exit 1
 fi
+
+echo "
+*** Domain: $dom
+*** Direct: $wd
+"
 
 if $pull; then
     if git pull origin master; then
@@ -82,15 +94,13 @@ if $pull; then
     fi
 fi
 
-if { git add --all :/ || git add --all; } &&
-                git commit -m "$comment"; then
-    echo 'Local commit successful'
-else
-    echo 'E: Local commit failed'
-fi
+echo '*** Local commit'
+{ git add --all :/ || git add --all; } &&
+git commit -m "$comment"
 
 #login to remote and detach the branch
 
+echo '*** detach remote'
 if jssh "$dom" "cd $wd
     { git add --all :/ || git add --all; } &&
     git commit -m "$comment"
@@ -103,6 +113,7 @@ else
 fi
 
 # push to remote
+echo '*** Push to remote'
 p_flags=''
 if $force; then
     p_flags="$p_flags -f"
@@ -115,6 +126,7 @@ else
 fi
 
 # reattach remote branch
+echo '*** Re-attach remote'
 if jssh "$dom" "cd '$wd'
     { git add --all :/ || git add --all; } &&
     git commit -m '$comment'
