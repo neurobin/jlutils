@@ -1,0 +1,106 @@
+#!/bin/bash
+p_name=gitppush
+p_version=0.0.1
+ver_info="
+Name        : $p_name
+Version     : $p_version
+"
+help="
+########## $p_name #############
+git packaged push
+pushes same content to two brances and packaged content to release branch
+branches are:
+    1. master
+    2. release
+    3. (user defined)
+
+Options:
+    -b : branch name
+    -m : comment
+"
+
+branch=""
+comment="update"
+for op in "$@";do
+    case "$op" in
+        -v|--version)
+            echo "$ver_info"
+            shift
+            exit 0
+            ;;
+        -h|--help)
+            echo "$help"
+            shift
+            exit 0
+            ;;
+        -f|--force)
+        	push_opts="$push_opts -f"
+        	;;
+        -b|--branch)
+            shift
+            branch="$1"
+            shift
+            ;;
+        -m|--message)
+            shift
+            comment="$1"
+            shift
+            ;;
+        
+        -*)
+            echo "E: Invalid option: $1"
+            shift
+            exit 1
+            ;;
+    esac
+done
+
+if ! git branch |grep '^*'|grep '\bmaster$' > /dev/null 2>&1; then
+    echo "E: Not in the master branch"
+    exit 1
+fi
+
+td="$(mktemp -d)"
+shopt -s dotglob globstar extglob
+
+mkdir -p build
+cd build
+release_ok=false
+
+if [[ $? -eq 0 ]]; then
+	rm *.tar.gz
+	../configure >/dev/null && echo "./configure ++"
+	make dist >/dev/null && echo "make dist ++"
+	make distclean >/dev/null && echo "make distclean ++"
+	tar xzf *.tar.gz -C "$td/" --strip-components=1 && release_ok=true && echo "Un-tar ++"  
+	rm *.tar.gz && echo "Removed tar ++"
+	cd .. && echo "back to root dir ++"
+fi
+
+
+{ git add --all :/ || git add --all; } &&
+git commit -m "$comment" && echo "Commit on master ++"
+
+if [[ $branch != "" ]];then 
+	git checkout "$branch" || git checkout -b "$branch"
+	git merge master && echo "Commit on $branch ++"
+fi
+
+
+
+if git checkout release || git checkout -b release; then
+	if $release_ok; then 
+		find ./ -mindepth 1 ! -path '*/.git/*' -delete
+	fi
+	mv -f "$td"/* ./
+	git add --all :/
+	git commit -m "$comment" && echo "Commit on release ++"
+fi
+
+rm -r "$td"
+
+git checkout master && echo "Back to master ++"
+git push $push_opts --all &&
+echo "Push ++"
+
+

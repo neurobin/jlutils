@@ -86,14 +86,6 @@ echo "
 *** Direct: $wd
 "
 
-if $pull; then
-    if git pull origin master; then
-        echo 'Pulled from remote successfully'
-    else
-        echo 'Failed to pull from remote'
-    fi
-fi
-
 echo '*** Local commit'
 { git add --all :/ || git add --all; } &&
 git commit -m "$comment"
@@ -110,6 +102,14 @@ if jssh "$dom" "cd $wd
     echo 'Detached remote branch successfully'
 else
     echo 'E: Failed to detach remote branch'; exit 1;
+fi
+
+if $pull; then
+    if git pull origin master; then
+        echo 'Pulled from remote successfully'
+    else
+        echo 'Failed to pull from remote'
+    fi
 fi
 
 # push to remote

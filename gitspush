@@ -61,8 +61,10 @@ fi
 git commit -m "$comment"
 { git checkout release || git checkout -b release; } &&
 git merge master
-{ if [[ $branch != "" ]];then git checkout "$branch" || git checkout -b "$branch";fi; } &&
-git merge master
+if [[ $branch != "" ]];then 
+	git checkout "$branch" || git checkout -b "$branch"
+	git merge master
+fi
 git checkout master
 git push --all &&
 echo Success
