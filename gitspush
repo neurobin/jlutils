@@ -60,10 +60,10 @@ fi
 { git add --all :/ || git add --all; } &&
 git commit -m "$comment"
 { git checkout release || git checkout -b release; } &&
-git merge master
+git merge -m "$comment" master
 if [[ $branch != "" ]];then 
 	git checkout "$branch" || git checkout -b "$branch"
-	git merge master
+	git merge -m "$comment" master
 fi
 git checkout master
 git push --all &&

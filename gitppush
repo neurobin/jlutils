@@ -83,7 +83,7 @@ git commit -m "$comment" && echo "Commit on master ++"
 
 if [[ $branch != "" ]];then 
 	git checkout "$branch" || git checkout -b "$branch"
-	git merge master && echo "Commit on $branch ++"
+	git merge -m "$comment" master && echo "Commit on $branch ++"
 fi
 
 
