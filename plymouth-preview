@@ -1,0 +1,34 @@
+#!/bin/sh
+
+## Preview Plymouth Splash       ##
+## by Md Jahidul Hamid           ##
+##    www.neurobin.org           ##
+##    License: GPL v3            ##
+
+chk_root () {
+  if [ ! $( id -u ) -eq 0 ]; then
+    echo Must be run as root
+    exit
+  fi
+}
+
+chk_root
+
+duration="$1"
+if [ "$duration" = "" ]; then
+  duration=5
+else
+  if ! echo "$duration" |grep '^[0-9]*$'; then
+    echo "Invalid duration: $duration"
+    exit 1
+  fi
+fi
+
+plymouthd
+plymouth --show-splash
+for i in $(seq 0 $duration); do
+  plymouth --update=test$I
+  sleep 1
+done
+plymouth quit
+
