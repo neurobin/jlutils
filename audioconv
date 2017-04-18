@@ -1,0 +1,18 @@
+#!/bin/sh
+iext=$1
+oext=$2
+if [ "$iext" = '' ]; then
+    echo 'E: input extension required'
+    exit 1
+fi
+
+if [ "$oext" = '' ]; then
+    echo 'E: output extension required'
+    exit 1
+fi
+
+find . -type f -name "*$iext" -exec $SHELL -c "
+fp=\$1
+f=\$(basename \"\$fp\" $iext)
+avconv -i \"\${f}$iext\" \"\${f}$oext\"
+" "$0" '{}' \;
