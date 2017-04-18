@@ -1,6 +1,52 @@
 #!/bin/sh
-iext=$1
-oext=$2
+id='.'
+od='.'
+count=0
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        -id|--input-dir)
+            id="$2"
+            if [ ! -d "$id" ]; then
+                echo "E: No such directory: '$id'"
+                exit 1
+            fi
+            shift
+            ;;
+
+        -od|--output-dir)
+            od="$2"
+            mkdir -p "$od"
+            if [ ! -d "$od" ]; then
+                echo "E: No such directory: '$od'"
+                exit 1
+            fi
+            shift
+            ;;
+
+        --help|-h)
+            echo "Usage:"
+            echo "  myavconv [options] input-extension output-extension"
+            echo "    -id \"input directory\""
+            echo "    -od \"output directory\""
+            echo "    -h \"help menu\""
+            exit 1
+            ;;
+        *)
+            count=$(expr $count + 1)
+            if [ $count -eq 1 ]; then
+                iext=$1
+            elif [ $count -eq 2 ]; then
+                oext=$1
+            else
+                echo "E: Invalid option: '$1'"
+                exit 1
+            fi
+            ;;
+    esac
+    shift
+done
+
 if [ "$iext" = '' ]; then
     echo 'E: input extension required'
     exit 1
@@ -14,5 +60,5 @@ fi
 find . -type f -name "*$iext" -exec $SHELL -c "
 fp=\$1
 f=\$(basename \"\$fp\" $iext)
-avconv -i \"\${f}$iext\" \"\${f}$oext\"
+avconv -i \""$id/"\${f}$iext\" \""$od/"\${f}$oext\"
 " "$0" '{}' \;
