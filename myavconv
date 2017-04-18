@@ -1,9 +1,13 @@
 #!/bin/sh
+#set -x
 id='.'
 od='.'
 count=0
+globs=
+topt=$#
 while [ $# -gt 0 ]
 do
+    count=$(expr $count + 1)
     case "$1" in
         -id|--input-dir)
             id="$2"
@@ -23,42 +27,40 @@ do
             fi
             shift
             ;;
-
+        -ox|--ouptput-extension)
+            oext=$2
+            shift
+            ;;
         --help|-h)
             echo "Usage:"
-            echo "  myavconv [options] input-extension output-extension"
+            echo "  myavconv [options] input-extension/s"
+            echo "    -ox \"output extension\""
             echo "    -id \"input directory\""
             echo "    -od \"output directory\""
             echo "    -h \"help menu\""
             exit 1
             ;;
         *)
-            count=$(expr $count + 1)
-            if [ $count -eq 1 ]; then
-                iext=$1
-            elif [ $count -eq 2 ]; then
-                oext=$1
+            if [ "$globs" = '' ]; then
+                globs="-name '*$1'"
             else
-                echo "E: Invalid option: '$1'"
-                exit 1
+                globs="$globs -o -name '*$1'"
             fi
             ;;
     esac
     shift
 done
-
-if [ "$iext" = '' ]; then
-    echo 'E: input extension required'
-    exit 1
-fi
-
+oext=$(echo "$oext" |sed -n 's/^[.]*//p')
 if [ "$oext" = '' ]; then
     echo 'E: output extension required'
     exit 1
 fi
 
-find . -type f -name "*$iext" -exec $SHELL -c "
+find "$id" -type f $globs -exec $SHELL -c "
 fp=\$1
-f=\$(basename \"\$fp\" $iext)
-avconv -i \""$id/"\${f}$iext\" \""$od/"\${f}$oext\"
+fpwe=\$(echo \"\$fp\" |sed -n 's/\(.*\)\.[^.]*$/\1/p')
+fpwe=\$(echo \"\$fpwe\" |sed -n 's#^[./]*##p')
+d=\$(dirname \"\$fpwe\")
+mkdir -p \""${od}/"\$d\"
+avconv -i \"\$fp\" \""${od}/"\$fpwe.$oext\"
 " "$0" '{}' \;
