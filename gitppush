@@ -55,9 +55,25 @@ for op in "$@";do
     esac
 done
 
+cbranch=$(git branch |sed -n 's/^*[[:blank:]]*\(.*\)$/\1/p')
+
 if ! git branch |grep '^*'|grep '\bmaster$' > /dev/null 2>&1; then
-    echo "E: Not in the master branch"
-    exit 1
+    if [[ "$cbranch" = 'release' ]]; then
+        echo "E: You are in relase branch"
+        exit 1
+    elif [[ "$cbranch" != '' ]]; then
+        echo "W: you are not in master branch"
+        echo "Current branch: $cbranch"
+        printf "Continue with current branch?: (Y/n): "
+        read c
+        if [[ "$c" != [Yy] ]]; then
+            echo "E: Not in the master branch"
+            exit 1
+        fi
+    else
+        echo "E: Not in the master branch"
+        exit 1
+    fi
 fi
 
 td="$(mktemp -d)"
@@ -106,7 +122,7 @@ fi
 
 rm -r "$td"
 
-git checkout master && echo "Back to master ++"
+git checkout "$cbranch" && echo "Back to $cbranch ++"
 git push $push_opts --all &&
 echo "Push ++"
 
