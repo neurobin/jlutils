@@ -1,0 +1,199 @@
+#!/bin/bash
+
+msg_out(){
+	printf "*** $*\n" #> /dev/stdout
+}
+
+_star_s(){
+    if [ "$1" = '' ]; then
+        title='**********'
+    else
+        title=" ($1) "
+    fi
+    local s="************************$title*****************************"
+    printf "\n\n\n*** $s\n"
+}
+
+_star_e(){
+    local s='***************************************************************'
+    printf "*** $s\n"
+}
+
+err_out(){
+	printf "\nE: $*\n" >&2
+}
+
+wrn_out(){
+	printf "\nW: $*\n" >&2
+}
+
+err_exit(){
+	err_out "$*"
+	exit 1
+}
+
+empty_var_exit(){
+    # $1 -> msg
+    # $2 -> var
+    if [ "$2" = '' ]; then
+        err_exit "$1"
+    fi
+}
+
+chkroot(){
+	if [ "$(id -u)" != "0" ]; then
+	  err_out "root access required."
+	  exit 1
+	fi
+}
+
+chknorm(){
+	if [ "$(id -u)" = "0" ]; then
+	  wrn_out "Running as root not recommended. May produce some problems. Better run as a normal user."
+	  return 1
+	fi
+}
+
+chkcmd(){
+    if command -v "$1" >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+python=python
+dir=venv
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        -p|--python)
+            empty_var_exit "Argument missing for -p"
+            python="$2"
+            shift
+            ;;
+        -d|--dir)
+            empty_var_exit "Argument missing for -d"
+            dir="$2"
+            shift
+            ;;
+        --help|*)
+            echo "Usage:"
+            echo " -p,  --python \"python_executable\""
+            echo "      --help"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# checks
+if ! chkcmd "$python"; then
+    err_exit "python executable $python not found."
+fi
+
+if [[ "$dir" = '' ]]; then
+    err_exit "directory name/path not given"
+fi
+
+virtualenv --python="$python" "$dir"
+
+vact="#!/bin/sh
+. '$dir/bin/activate'
+"
+mng='#!/bin/sh
+. ./vact
+python manage.py ${1+"$@"}
+'
+prep="#!/bin/sh
+virtualenv --python='$python' '$dir'
+. ./vact
+pip install -r requirements.txt
+./mng migrate
+"
+run="#!/bin/sh
+. ./vact
+python manage.py runserver 8080
+"
+update=$(
+cat <<'EOF'
+#!/bin/sh
+cbranch=$(git branch |sed -n 's/^*[[:blank:]]*\(.*\)$/\1/p')
+git add --all :/ || git add --all
+git commit -m 'local changes'
+git pull origin $cbranch
+. ./vact
+pip install -r requirements.txt
+
+deactivate
+EOF
+)
+fixperm=$(cat <<'EOF'
+#!/bin/sh
+####################################################################################################
+####################################  Secure the server ############################################
+####################################################################################################
+
+# Prevent running this script as root
+if [ "$(id -u)" = "0" ]; then
+  echo "Please run as a normal user not root"
+  return 1
+fi
+
+## These steps are necessary for apache2 to work correctly and securely
+# A dedicated group for www-data
+user=$USER
+grp=www-intranet
+sudo groupadd $grp                          # Create a group named www-intranet
+sudo adduser www-data $grp                  # Add www-data to group www-intranet
+sudo adduser $user $grp                     # Add current user to group www-intranet
+sudo find . -exec chown $user:$grp '{}' \;  # Change the group of intranet directory to www-intranet recursively
+
+# Remove perms for others
+find . -exec chmod o= '{}' \;
+
+# Remove perms for group and others in .git directory
+find .git -exec chmod g=,o= '{}' \;
+
+# General folder and file permission
+dirp=750
+filp=640
+find . -regex '^./\(.git\|venv\)\(/.*$\|$\)' -prune -o -type d -exec chmod $dirp '{}' \;
+find . -regex '^./\(.git\|venv\)\(/.*$\|$\)' -prune -o -type f -exec chmod $filp '{}' \;
+
+# Executable files
+xfiles="fixperm inst mng prep run update"
+chmod u+x $xfiles
+
+# Group writable directories
+dirp='u=rwx,g=rwx,o='
+filp='u=rw,g=rw,o='
+dirs='media'
+find $dirs -type d -exec chmod $dirp '{}' \;
+find $dirs -type f -exec chmod $filp '{}' \;
+
+
+# Restart the server
+sudo service apache2 restart
+
+EOF
+)
+
+echo "$vact" > vact
+touch requirements.txt
+echo "$mng" > mng
+chmod +x mng
+echo "$prep" > prep
+chmod +x prep
+echo "$run" > run
+chmod +x run
+echo "$update" > update
+chmod +x update
+echo "$fixperm" > fixperm
+chmod +x fixperm
+
+touch README.md
+touch config.py
+
+
+

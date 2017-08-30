@@ -1,0 +1,6 @@
+#!/bin/sh
+
+pkgname=$1
+git clone ssh://aur@aur.archlinux.org/$pkgname.git
+cd "$pkgname"
+git fetch
