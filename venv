@@ -194,6 +194,7 @@ chmod +x fixperm
 
 touch README.md
 touch config.py
+mkdir -p media static templates/jinja2
 
 
 
