@@ -179,6 +179,10 @@ sudo service apache2 restart
 EOF
 )
 
+pempty='#!/bin/sh
+find . ! -path '*/.git/*' -type d -empty -exec touch "{}/.dummy" \;
+'
+
 echo "$vact" > vact
 touch requirements.txt
 echo "$mng" > mng
@@ -191,6 +195,8 @@ echo "$update" > update
 chmod +x update
 echo "$fixperm" > fixperm
 chmod +x fixperm
+echo "$pempty" > pempty
+chmod +x pempty
 
 touch README.md
 touch config.py

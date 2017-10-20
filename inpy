@@ -1,0 +1,20 @@
+#!/bin/sh
+
+pver=${1:-2.7.12}
+ppath=${2:-$HOME/.mypython}
+pexe=lpython
+
+echo "Python version: $pver"
+echo "Python path: $ppath"
+
+tmpdir=$(mktemp -d)
+cd "$tmpdir"
+wget http://www.python.org/ftp/python/$pver/Python-$pver.tgz
+tar -zxvf Python-$pver.tgz
+cd Python-$pver
+mkdir -p "$ppath"
+./configure --prefix="$ppath"
+make
+make install
+
+echo PATH

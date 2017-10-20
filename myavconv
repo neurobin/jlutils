@@ -58,9 +58,10 @@ fi
 
 find "$id" -type f $globs -exec $SHELL -c "
 fp=\$1
+od=\$2
 fpwe=\$(echo \"\$fp\" |sed -n 's/\(.*\)\.[^.]*$/\1/p')
 fpwe=\$(echo \"\$fpwe\" |sed -n 's#^[./]*##p')
 d=\$(dirname \"\$fpwe\")
-mkdir -p \""${od}/"\$d\"
-avconv -i \"\$fp\" \""${od}/"\$fpwe.$oext\"
-" "$0" '{}' \;
+mkdir -p \"\$od/\$d\"
+avconv -i \"\$fp\" \"\$od/\$fpwe.$oext\"
+" "$0" '{}' "$od" \;
