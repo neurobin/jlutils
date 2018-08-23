@@ -1,31 +1,78 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "$BASH_SOURCE")
+
 sudo apt update
 sudo apt upgrade
 
-sudo apt purge transmission-gtk parole
+pack_install(){
+	for pack in $@; do
+		if sudo apt install $pack; then
+			echo "=== Successfully installed: $pack"
+		else
+			echo "!!! Failed to install: $pack" >&2
+		fi
+	done
+}
 
-sudo apt install build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi synaptic
+pack_purge(){
+	for pack in $@; do
+		if sudo apt purge $pack; then
+			echo "=== Successfully purged: $pack"
+		else
+			echo "!!! Failed to purge: $pack" >&2
+		fi
+	done
+}
+
+#install some packages
+ipacks=(build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi synaptic cryptsetup virtualbox gespeaker vlc gnome-system-monitor gimp wvdial xterm zsh ksh expect hardinfo inxi openssl eog file-roller libreoffice wget tar gzip lzip thunderbird evince)
+
+pack_install ${ipacks[@]}
+
+
+#completely remove some packages
+rpacks=(transmission-gtk parole engrampa abiword)
+
+pack_purge ${rpacks[@]}
+
 
 #Google Chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-sudo apt install google-chrome-stable
+pack_install google-chrome-stable
 
 #unetbootin
 sudo add-apt-repository ppa:gezakovacs/ppa -y
-sudo apt install unetbootin
+pack_install unetbootin
 
 #smplayer
 sudo add-apt-repository ppa:rvm/smplayer -y
-sudo apt install smplayer
+pack_install smplayer
 
-#rnm, shc, oraji
+#rnm, shc, oraji etc.
 sudo add-apt-repository ppa:neurobin/ppa -y
-sudo apt install rnm shc oraji
+pack_install rnm shc oraji tartos
 
 #xfce4-goodies
-sudo apt install xfce4-goodies
+pack_install xfce4-goodies
 
+#lampi
+wget https://raw.githubusercontent.com/neurobin/lampi/release/lampi -O lampi
+chmod +x lampi
+sudo mv lampi /usr/bin/
 
+#jssh
+wget https://raw.githubusercontent.com/neurobin/jssh/master/jssh -O jssh
+chmod +x jssh
+sudo mv jssh /usr/bin/
+
+#JLIVECD
+tmpd=$(mktemp -d)
+cd "$tmpd"
+wget https://github.com/neurobin/JLIVECD/archive/release.tar.gz -O - | tar zxf -
+cd JLIVECD-release
+chmod +x install.sh
+sudo ./install.sh
+cd "$BASEDIR"
 
