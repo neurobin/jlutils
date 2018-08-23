@@ -3,7 +3,9 @@
 sudo apt update
 sudo apt upgrade
 
-sudo apt install  build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi
+sudo apt purge transmission-gtk parole
+
+sudo apt install build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi synaptic
 
 #Google Chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
