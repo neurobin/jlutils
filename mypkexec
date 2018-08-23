@@ -1,0 +1,8 @@
+#!/bin/sh
+# Super User Execute
+# Gives PkExec current environmental variables
+#  and passes current parameters thru running shells to it.
+#
+# Use this file instead of gksu, gksudo, and, pkexec.
+
+pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY ${1+"$@"}

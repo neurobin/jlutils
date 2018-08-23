@@ -2,4 +2,4 @@
 
 export DISPLAY=:0.0
 xhost +
-pkexec firefox52 ${1+"$@"}
+firefox52 ${1+"$@"}
