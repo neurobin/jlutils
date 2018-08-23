@@ -3,7 +3,7 @@
 sudo apt update
 sudo apt upgrade
 
-sudo apt install  build-essential geany gedit gparted qalculate qbittorrent git tlp
+sudo apt install  build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi
 
 #Google Chrome
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -21,4 +21,9 @@ sudo apt install smplayer
 #rnm, shc, oraji
 sudo add-apt-repository ppa:neurobin/ppa -y
 sudo apt install rnm shc oraji
+
+#xfce4-goodies
+sudo apt install xfce4-goodies
+
+
 

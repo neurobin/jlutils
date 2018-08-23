@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/media/jahid/lincom/homecom/softs/firefox-52-esr/firefox -p default-esr ${1+"$@"}
