@@ -1,0 +1,19 @@
+#!/bin/bash
+touch .doing
+mp=$1
+tp=$2
+curl "$mp" 2>/dev/null | grep -oE "https?://[^\"]+$tp[^\"]*chapter_[^\"]+" | sort -V |
+while read -r purl; do
+    chap=$(basename "$purl")
+    if [[ ! -d "$chap" ]]; then
+        mkdir -p "$chap"
+        cd "$chap"
+            touch .doing
+            curl "$purl" |grep -oE '<img(\s+class="img_content"|)\s+src="[^"]*"' |grep -oE 'https?://[^"]+' |mwget -c -i -
+            mv .doing .done
+        cd - >/dev/null
+    else
+        echo "Directory exists: $chap [Skipped]"
+    fi
+done
+mv -f .doing .done

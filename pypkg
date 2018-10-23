@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "$1" = "2" ]; then
+    python=python2
+else
+    python=python3
+fi
+pyclean
+$python setup.py sdist bdist_wheel
