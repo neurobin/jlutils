@@ -1,0 +1,3 @@
+#!/bin/bash
+
+php ~/bin/imghtml.php > index.html
