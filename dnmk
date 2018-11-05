@@ -6,6 +6,7 @@ curl "$mp" 2>/dev/null | grep -oE "https?://[^\"]+$tp[^\"]*chapter_[^\"]+" | sor
 while read -r purl; do
     chap=$(basename "$purl")
     if [[ ! -d "$chap" ]]; then
+        echo  "$chap" > .doing
         mkdir -p "$chap"
         cd "$chap"
             touch .doing
