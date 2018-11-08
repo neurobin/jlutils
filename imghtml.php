@@ -19,6 +19,7 @@ img{
 <?php
 
 $arr = glob('*');
+$arr = preg_grep("/\.html$/i", $arr, PREG_GREP_INVERT);
 natsort($arr);
 //var_dump($arr);
 foreach($arr as $f){

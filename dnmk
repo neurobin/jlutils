@@ -14,6 +14,7 @@ while read -r purl; do
         cd "$chap"
             touch .doing
             curl "$purl" |grep -oE '<img(\s+class="img_content"|)\s+src="[^"]*"' |grep -oE 'https?://[^"]+/[0-9]+\.[^/"]+' |mwget -c -i -
+            img2html
             rm .doing
         cd - >/dev/null
     else
