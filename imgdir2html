@@ -1,1 +1,3 @@
-/media/jahid/lincom/homecom/Git/Github/neurobin/jlutils/imgdir2html
+#!/bin/bash
+
+php ~/bin/imgdir2html.php ${1+"$@"} > index.html

@@ -1,1 +1,3 @@
-../Git/Github/neurobin/jlutils/gitcom
+#!/bin/sh
+git add --all :/
+git commit -m "$*"

@@ -1,1 +1,11 @@
-../Git/Github/neurobin/jlutils/webgitpull
+#!/bin/bash
+repo="$1"
+logdir="$HOME/.neurobin/webgit"
+configfile="$logdir/.config"
+mkdir -p "$logdir" && touch $configfile || exit 1
+host="$(grep -sioP '(?<=^Host=).*' "$configfile")"
+port="$(grep -sioP '(?<=^Port=).*' "$configfile")"
+user="$(grep -sioP '(?<=^User=).*' "$configfile")"
+gitmirrordir="$(grep -sioP '(?<=^GitMirror=).*' "$configfile")"
+gitbasedir="$(grep -sioP '(?<=^BaseDir=).*' "$configfile")"
+scp -pr -P $port $user@$host:$gitbasedir/$repo/* .

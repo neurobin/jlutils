@@ -1,1 +1,3 @@
-../Git/Github/neurobin/jlutils/php644
+#!/bin/bash
+find . -type f -name '*.php' -exec chmod 644 {} \;
+

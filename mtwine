@@ -1,1 +1,2 @@
-/media/jahid/lincom/homecom/Git/Github/neurobin/jlutils/mtwine
+#!/bin/sh
+twine ${1+"$@"}

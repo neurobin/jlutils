@@ -1,1 +1,35 @@
-../Git/Github/neurobin/jlutils/plymouth-preview
+#!/bin/sh
+
+#*** Preview Plymouth Splash ***#
+#*    Md Jahidul Hamid         *#
+#*    www.neurobin.org         *#
+#*    License: GPL v3          *#
+#*******************************#
+
+chkroot () {
+  if [ ! $(id -u) -eq 0 ]; then
+    echo "E: Must run as root"
+    exit 1
+  fi
+}
+
+chkroot
+
+duration="$1"
+if [ "$duration" = "" ]; then
+  duration=5
+else
+  if ! echo "$duration" |grep '^[0-9]*$'; then
+    echo "E: Invalid duration: $duration"
+    exit 1
+  fi
+fi
+
+plymouthd
+plymouth --show-splash
+for i in $(seq 0 $duration); do
+  plymouth --update=test$I
+  sleep 1
+done
+plymouth quit
+

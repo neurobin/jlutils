@@ -1,1 +1,72 @@
-../Git/Github/neurobin/jlutils/gitspush
+#!/bin/bash
+p_name=gitspush
+p_version=0.0.1
+ver_info="
+Name        : $p_name
+Version     : $p_version
+"
+help="
+########## gitspush #############
+git same push
+pushes same content to two or three brances
+branches are:
+    1. master
+    2. release
+    3. (user defined)
+
+Options:
+    -b : branch name
+    -m : comment
+"
+
+branch=""
+comment="update"
+for op in "$@";do
+    case "$op" in
+        -v|--version)
+            echo "$ver_info"
+            shift
+            exit 0
+            ;;
+        -h|--help)
+            echo "$help"
+            shift
+            exit 0
+            ;;
+        -b)
+            shift
+            branch="$1"
+            shift
+            ;;
+        -m)
+            shift
+            comment="$1"
+            shift
+            ;;
+        
+        -*)
+            echo "E: Invalid option: $1"
+            shift
+            exit 1
+            ;;
+    esac
+done
+
+if ! git branch |grep '^*'|grep '\bmaster$' > /dev/null 2>&1; then
+    echo "E: Not in the master branch"
+    exit 1
+fi
+
+{ git add --all :/ || git add --all; } &&
+git commit -m "$comment"
+{ git checkout release || git checkout -b release; } &&
+git merge -m "$comment" master
+if [[ $branch != "" ]];then 
+	git checkout "$branch" || git checkout -b "$branch"
+	git merge -m "$comment" master
+fi
+git checkout master
+git push --all &&
+echo Success
+
+

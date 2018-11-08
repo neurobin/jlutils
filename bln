@@ -1,1 +1,4 @@
-../Git/Github/neurobin/jlutils/bln
+#!/bin/sh
+for f in "$@";do
+  ln -s "$f" "$f.link"
+done

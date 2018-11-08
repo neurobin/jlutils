@@ -1,1 +1,3 @@
-/media/jahid/lincom/homecom/Git/Github/neurobin/jlutils/img2html
+#!/bin/bash
+
+php ~/bin/imghtml.php > 0_index.html

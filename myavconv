@@ -1,1 +1,76 @@
-../Git/Github/neurobin/jlutils/myavconv
+#!/bin/sh
+#set -x
+id='.'
+od='.'
+count=0
+globs=
+topt=$#
+overwrite=false
+while [ $# -gt 0 ]
+do
+    count=$(expr $count + 1)
+    case "$1" in
+        -id|--input-dir)
+            id="$2"
+            if [ ! -d "$id" ]; then
+                echo "E: No such directory: '$id'"
+                exit 1
+            fi
+            shift
+            ;;
+
+        -od|--output-dir)
+            od="$2"
+            mkdir -p "$od"
+            if [ ! -d "$od" ]; then
+                echo "E: No such directory: '$od'"
+                exit 1
+            fi
+            shift
+            ;;
+        -ox|--ouptput-extension)
+            oext=$2
+            shift
+            ;;
+        -ov|--overwrite)
+            overwrite=true
+            ;;
+        --help|-h)
+            echo "Usage:"
+            echo "  myavconv [options] input-extension/s"
+            echo "    -ox  \"output extension\""
+            echo "    -id  \"input directory\""
+            echo "    -od  \"output directory\""
+            echo "    -ov  \"overwrite\""
+            echo "    -h   \"help menu\""
+            exit 1
+            ;;
+        *)
+            if [ "$globs" = '' ]; then
+                globs="-name '*$1'"
+            else
+                globs="$globs -o -name '*$1'"
+            fi
+            ;;
+    esac
+    shift
+done
+oext=$(echo "$oext" |sed -n 's/^[.]*//p')
+if [ "$oext" = '' ]; then
+    echo 'E: output extension required'
+    exit 1
+fi
+
+find "$id" -type f $globs -exec $SHELL -c "
+fp=\$1
+od=\$2
+fpwe=\$(echo \"\$fp\" |sed -n 's/\(.*\)\.[^.]*$/\1/p')
+fpwe=\$(echo \"\$fpwe\" |sed -n 's#^[./]*##p')
+d=\$(dirname \"\$fpwe\")
+mkdir -p \"\$od/\$d\"
+if [[ ! -f \"\$od/\$fpwe.$oext\" ]] || $overwrite; then
+    avconv -i \"\$fp\" \"\$od/\$fpwe.$oext\"
+else
+    echo \"Skipping existing file: \$od/\$fpwe.$oext\"
+fi
+" "$0" '{}' "$od" \;
