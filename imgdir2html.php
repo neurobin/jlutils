@@ -11,15 +11,20 @@ if(!empty($argv[2])){
     $endIdx = "";
 }
 $arr = glob('*');
-$i = 0;
+natsort($arr);
+$varr = array();
 foreach($arr as $f){
     if(!is_dir($f)){
-        //delete this element from the array
-        unset($arr[$i]);
+        //not gonna add to varr
+    } else {
+        //should be added to varr
+        if(!preg_match("/$startIdx/", $f) && empty($started)) continue;
+        $started = true;
+        array_push($varr, $f);
+        if(!empty($endIdx) && preg_match("/$endIdx/", $f)) break;
     }
-    $i++;
 }
-natsort($arr);
+$arr = $varr;
 //~ var_dump($arr);
 ?>
 <html>
@@ -75,8 +80,6 @@ img{
 <div id="imgcont">
 <?php
 foreach($arr as $f){
-    if(!preg_match("/$startIdx/", $f) && empty($started)) continue;
-    $started = true;
     echo "<br><h1 id='$f'>$f</h1><br>";
     $imgarr = glob("$f/*");
     $imgarr = preg_grep("/\.html$/i", $imgarr, PREG_GREP_INVERT);
@@ -84,7 +87,6 @@ foreach($arr as $f){
     foreach($imgarr as $img){
         echo "<img src='$img'><br>";
     }
-    if(!empty($endIdx) && preg_match("/$endIdx/", $f)) break;
 }
 ?>
 </div>
