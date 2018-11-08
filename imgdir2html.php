@@ -58,7 +58,7 @@ div#imgcont{
 
 img{
     max-width: 100%;
-    min-width: 80%;
+    min-width: 95%;
     height: auto;
     background-size: contain;
 }
