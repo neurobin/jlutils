@@ -1,8 +1,1 @@
-#!/bin/bash
-[[ $1 == "" ]] && echo "branch name needed. Abort!" && exit 1
-git branch -D "$1" && echo "*** Successfully deleted local branch: $1 ***" || echo "--- Failed to delete local branch: $1"
-declare -a remotes
-IFS=$'\n' remotes=($(git remote -v |grep -o '^[^[:space:]]*' |sort -u))
-for rem in "${remotes[@]}";do
-git push "$rem" --delete "$1" && echo "***Successfully deleted remote branch: $rem/$1 ***" || { echo "--- Failed to delete remote branch: $rem/$1"; }
-done
+../Git/Github/neurobin/jlutils/delgib
