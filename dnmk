@@ -5,10 +5,10 @@ tp=$2
 if [[ "$tp" = "" ]]; then
     tp=$(basename "$mp")
 fi
-curl "$mp" 2>/dev/null | grep -oE '<a\s+href="[^"]+"' | grep -oE "https?://[^\"]+$tp[^\"]*chapter_[^\"]+" | sort -V | uniq |
+curl "$mp" 2>/dev/null | grep -oE '<a\s+href="[^"]+"' | grep -oE "https?://[^\"]+$tp[^\"]*chapter[_-][^\"]+" | sort -V | uniq |
 while read -r purl; do
     chap=$(basename "$purl")
-    if [[ ! -d "$chap" ]]; then
+    if [[ ! -d "$chap" ]] || [[ -f "$chap/.doing" ]]; then
         echo  "$chap" > .doing
         mkdir -p "$chap"
         cd "$chap"

@@ -97,6 +97,8 @@ fi
 { git add --all :/ || git add --all; } &&
 git commit -m "$comment" && echo "Commit on master ++"
 
+comment=$(git log | head -10 |grep '^[[:blank:]][[:blank:]]*[a-zA-Z]'|head -1)
+
 if [[ $branch != "" ]];then 
 	git checkout "$branch" || git checkout -b "$branch"
 	git merge -m "$comment" master && echo "Merge on $branch ++"

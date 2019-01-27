@@ -69,7 +69,7 @@ fpwe=\$(echo \"\$fpwe\" |sed -n 's#^[./]*##p')
 d=\$(dirname \"\$fpwe\")
 mkdir -p \"\$od/\$d\"
 if [[ ! -f \"\$od/\$fpwe.$oext\" ]] || $overwrite; then
-    avconv -i \"\$fp\" \"\$od/\$fpwe.$oext\"
+    ffmpeg -i \"\$fp\" \"\$od/\$fpwe.$oext\"
 else
     echo \"Skipping existing file: \$od/\$fpwe.$oext\"
 fi
