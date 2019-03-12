@@ -1,0 +1,3 @@
+#!/bin/bash
+
+printf 'AUTHENTICATE "ooDohvohm7shee0P"\r\nSIGNAL NEWNYM\r\n' | nc 127.0.0.1 9051
