@@ -1,0 +1,2 @@
+#!/bin/sh
+geoiplookup $(curl --socks5 127.0.0.1:9050 http://icanhazip.com 2>/dev/null | tee /dev/stderr)

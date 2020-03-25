@@ -7,7 +7,7 @@ sudo apt upgrade
 
 pack_install(){
 	for pack in $@; do
-		if sudo apt install $pack; then
+		if sudo apt install -y $pack; then
 			echo "=== Successfully installed: $pack"
 		else
 			echo "!!! Failed to install: $pack" >&2
@@ -17,7 +17,7 @@ pack_install(){
 
 pack_purge(){
 	for pack in $@; do
-		if sudo apt purge $pack; then
+		if sudo apt purge -y $pack; then
 			echo "=== Successfully purged: $pack"
 		else
 			echo "!!! Failed to purge: $pack" >&2
@@ -26,7 +26,7 @@ pack_purge(){
 }
 
 #install some packages
-ipacks=(build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi synaptic cryptsetup virtualbox gespeaker vlc gnome-system-monitor gimp wvdial xterm zsh ksh expect hardinfo inxi openssl eog file-roller libreoffice wget tar gzip lzip thunderbird evince)
+ipacks=(build-essential geany gedit gparted qalculate qbittorrent git tlp gnome-disk-utility artha gdebi synaptic cryptsetup virtualbox gespeaker vlc gnome-system-monitor gimp wvdial xterm zsh ksh expect hardinfo inxi openssl eog file-roller libreoffice wget tar gzip lzip thunderbird evince zlib1g-dev libbz2-dev libssl-dev libreadline-dev libncurses5-dev libsqlite3-dev libgdbm-dev libdb-dev libexpat-dev libpcap-dev liblzma-dev libpcre3-dev tk-dev msr-tools)
 
 pack_install ${ipacks[@]}
 
@@ -38,9 +38,9 @@ pack_purge ${rpacks[@]}
 
 
 #Google Chrome
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-pack_install google-chrome-stable
+#wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+#pack_install google-chrome-stable
 
 #unetbootin
 sudo add-apt-repository ppa:gezakovacs/ppa -y

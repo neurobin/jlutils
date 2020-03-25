@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 find . -type d \( -name __pycache__ -o -name '*egg-info' -o -name 'dist' -o -name 'build' \) -exec rm -r '{}' ';'  2>/dev/null
 find . -type f -name '*.pyc' -delete 2>/dev/null

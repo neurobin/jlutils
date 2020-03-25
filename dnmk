@@ -2,13 +2,13 @@
 touch .doing
 mp=$1
 tp=$2
-img_srv=$3 # image server
+img_srv=${3:-1} # image server
 srv2='bu.mkklcdnbuv1.com'
 if [[ "$tp" = "" ]]; then
     tp=$(basename "$mp")
 fi
 
-curl "$mp" 2>/dev/null | grep -oE '<a\s+href="[^"]+"' | grep -oE "https?://[^\"]+$tp[^\"]*chapter[_-][^\"]+" | sort -V | uniq |
+curl "$mp" 2>/dev/null | grep -oP '<a[^>]+?href="[^"]+"' | grep -oE "https?://[^\"]+$tp[^\"]*chapter[_-][^\"]+" | sort -V | uniq |
 while read -r purl; do
     chap=$(basename "$purl")
     if [[ ! -d "$chap" ]] || [[ -f "$chap/.doing" ]]; then
@@ -16,10 +16,13 @@ while read -r purl; do
         mkdir -p "$chap"
         cd "$chap"
             touch .doing
+            echo "URL: $purl"
             if [[ "$img_srv" == 2 ]]; then
                 curl "$purl" |grep -oE '<img(\s+class="img_content"|)\s+src="[^"]*"' |grep -oE 'https?://[^"]+/[0-9]+\.[^/"]+' |sed -nr "s#(https?://)([^/]+)(/.*)#\1$srv2\3#p" |mwget -c -i -
+            elif [[ "$img_srv" == 0 ]]; then
+                curl "$purl" |grep -oE '<img[^>]+src="[^"]+"' |grep -oE 'https?://[^"]+' |wget -c -i -
             else
-                curl "$purl" |grep -oE '<img(\s+class="img_content"|)\s+src="[^"]*"' |grep -oE 'https?://[^"]+/[0-9]+\.[^/"]+' |mwget -c -i -
+                curl "$purl" |grep -oE '<img(\s+class="img_content"|)\s+src="[^"]*"' |grep -oE 'https?://[^"]+' |wget -c -i -
             fi
             img2html
             rm .doing

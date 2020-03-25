@@ -1,0 +1,17 @@
+#!/bin/bash
+
+min=$1
+max=$2
+if [ "$min" = "" ]; then
+	min=3.2
+fi
+
+if [ "$max" = "" ]; then
+	max=3.9
+fi
+echo "Min: ${min}GHz"
+echo "Max: ${max}GHz"
+
+for ((i=0;i<12;i++)); do
+	sudo cpufreq-set -c $i --min "${min}GHz" --max "${max}GHz"
+done

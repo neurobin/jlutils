@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# pip install undervolt
+
+offset=${1:-0}
+gpu=-75
+core=-100
+cache=-100
+uncore=-100
+analogio=-100
+
+gpu=$((gpu+offset))
+core=$((core+offset))
+cache=$((cache+offset))
+uncore=$((uncore+offset))
+analogio=$((analogio+offset))
+
+echo "gpu: $gpu"
+echo "core: $core"
+echo "cache: $cache"
+echo "uncore: $uncore"
+echo "analogio: $analogio"
+
+undervolt --gpu $gpu --core $core --cache $cache --uncore $uncore --analogio $analogio
+
+echo
+echo "----------------"
+echo "Cheking settings"
+echo "----------------"
+undervolt -r
