@@ -1,0 +1,9 @@
+#!/bin/bash
+
+devs=('sda' 'sdb')
+s=''
+for dev in "${devs[@]}"; do
+    s+="$dev: $(sudo hddtemp "/dev/$dev" | grep -oP '\d+\s*.{0,2}$') "
+done
+
+echo "$s"
