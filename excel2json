@@ -1,0 +1,14 @@
+#!/bin/bash
+
+in=$1
+out=$2
+
+if [[ "$in" == '' ]] || [[ "$out" == '' ]]; then
+    echo "Usage: $(basename "$BASH_SOURCE") infile outfile"
+    exit 1
+fi
+
+tmp=$(mktemp -t 'XXXXXXXXXXXXXXXXXXXX.csv')
+
+in2csv "$in" > "$tmp"
+csvjson "$tmp" > "$out"

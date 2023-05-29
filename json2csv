@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+import sys, os
+import pandas as pd
+
+
+jsonFIle = sys.argv[1]
+try:
+    csvfile = sys.argv[2]
+except IndexError:
+    csvfile = jsonFIle+'.csv'
+
+with open(jsonFIle, encoding='utf-8') as inputfile:
+    df = pd.read_json(inputfile)
+
+df.to_csv(csvfile, encoding='utf-8', index=False)
