@@ -1,3 +1,5 @@
 #!/bin/bash
 
-printf 'AUTHENTICATE "ooDohvohm7shee0P"\r\nSIGNAL NEWNYM\r\n' | nc 127.0.0.1 9051
+set +o history
+echo -e 'AUTHENTICATE "4ESeoXBrrU5fE0zQGGp4xK12KDMOEH8RoVsd9PNouuln6MeFZH"\r\nsignal NEWNYM\r\nQUIT' | nc 127.0.0.1 9051
+set -o history

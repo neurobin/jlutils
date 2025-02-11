@@ -1,8 +1,15 @@
 #!/bin/sh
 msg="$*"
-git add --all :/
+git status --porcelain | grep -oP '(?<=..\s).*' | while read l; do
+	git add $l && echo "Staged: $l" # $l here must not be quoted, quoted is applied by git status --porcelain
+done
+
 if [ "$msg" = "" ]; then
     git commit
 else
     git commit -m "$*"
+fi
+
+if [[ $? = 0 ]]; then
+	echo "Commit is now ready to be pushed. ** git push **"
 fi

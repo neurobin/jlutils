@@ -1,3 +1,10 @@
 #!/bin/bash
+suffix=''
+if [[ "$1" != '' ]]; then
+    suffix="-$1"
+fi
+if [[ "$2" != '' ]]; then
+    suffix="$suffix-$2"
+fi
 
-php ~/bin/imgdir2html.php ${1+"$@"} > index.html
+php /run/media/jahid/lincom/homecom/bin/imgdir2html.php ${1+"$@"} > "index$suffix.html"
