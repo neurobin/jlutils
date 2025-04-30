@@ -40,6 +40,5 @@ fi
 echo "Processing file: $in"
 echo "Output file: $out"
 echo "Volume: $volume"
-exit
 
 ffmpeg -i "$in" -af "highpass=f=300,asendcmd=0.0 afftdn sn start,asendcmd=1.5 afftdn sn stop,afftdn=nf=-20,dialoguenhance,lowpass=f=3000,volume=$volume" "$out"
